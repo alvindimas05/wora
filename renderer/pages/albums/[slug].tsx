@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { usePlayer } from "@/context/playerContext";
 import Songs from "@/components/ui/songs";
+import { invoke } from "@tauri-apps/api";
 
 type Album = {
   name: string;
@@ -26,8 +27,7 @@ export default function Album() {
   useEffect(() => {
     if (!router.query.slug) return;
 
-    window.ipc
-      .invoke("getAlbumWithSongs", router.query.slug)
+    invoke<Album>("getAlbumWithSongs", { id: router.query.slug })
       .then((response) => {
         setAlbum(response);
       });

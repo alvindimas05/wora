@@ -30,19 +30,21 @@ type Settings = {
   musicFolder: string;
 };
 
+type Stats = {
+  songs: number;
+  albums: number;
+  playlists: number;
+} | null;
+
 export default function Settings() {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(false);
   const [musicLoading, setMusicLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [stats, setStats] = useState<{
-    songs: number;
-    albums: number;
-    playlists: number;
-  } | null>(null);
+  const [stats, setStats] = useState<Stats>(null);
 
   useEffect(() => {
-    window.ipc.invoke("getSettings").then((response) => {
+    window.__TAURI__.invoke<Settings>("getSettings").then((response) => {
       setSettings(response);
       setPreviewUrl(
         response?.profilePicture
@@ -51,7 +53,7 @@ export default function Settings() {
       );
     });
 
-    window.ipc.invoke("getLibraryStats").then((response) => {
+    window.__TAURI__.invoke<Stats>("getLibraryStats").then((response) => {
       setStats(response);
     });
   }, []);
@@ -69,7 +71,7 @@ export default function Settings() {
       const file = data.profilePicture[0];
       const fileData = await file.arrayBuffer();
       try {
-        profilePicturePath = await window.ipc.invoke("uploadProfilePicture", {
+        profilePicturePath = await window.__TAURI__.invoke("uploadProfilePicture", {
           name: file.name,
           data: Array.from(new Uint8Array(fileData)),
         });
@@ -94,7 +96,7 @@ export default function Settings() {
       profilePicture: profilePicturePath,
     };
 
-    await window.ipc.invoke("updateSettings", updatedData).then((response) => {
+    await window.__TAURI__.invoke("updateSettings", updatedData).then((response) => {
       if (response) {
         setLoading(false);
         setSettings((prevSettings) => ({ ...prevSettings, ...updatedData }));
@@ -123,8 +125,7 @@ export default function Settings() {
 
   const updateMusicFolder = () => {
     setMusicLoading(true);
-    window.ipc
-      .invoke("setMusicFolder", true)
+    window.__TAURI__.invoke("setMusicFolder", true)
       .then((response) => {
         setMusicLoading(false);
         if (response) return;
@@ -134,7 +135,7 @@ export default function Settings() {
             Your music folder is updated.
           </div>,
         );
-        window.ipc.invoke("getSettings").then((response) => {
+        window.__TAURI__.invoke<Settings>("getSettings").then((response) => {
           setSettings(response);
           setPreviewUrl(
             response?.profilePicture
@@ -143,7 +144,7 @@ export default function Settings() {
           );
         });
 
-        window.ipc.invoke("getLibraryStats").then((response) => {
+        window.__TAURI__.invoke<Stats>("getLibraryStats").then((response) => {
           setStats(response);
         });
       })

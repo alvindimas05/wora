@@ -42,7 +42,7 @@ export default function Playlists() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    window.ipc.invoke("getAllPlaylists").then((response) => {
+    window.__TAURI__.invoke("getAllPlaylists").then((response) => {
       setPlaylists(response);
     });
   }, []);
@@ -60,7 +60,7 @@ export default function Playlists() {
       const file = data.playlistCover[0];
       const fileData = await file.arrayBuffer();
       try {
-        playlistCoverPath = await window.ipc.invoke("uploadPlaylistCover", {
+        playlistCoverPath = await window.__TAURI__.invoke("uploadPlaylistCover", {
           name: file.name,
           data: Array.from(new Uint8Array(fileData)),
         });
@@ -86,7 +86,7 @@ export default function Playlists() {
       coverArt: playlistCoverPath,
     };
 
-    window.ipc
+    window.Ipc
       .invoke("createPlaylist", updatedData)
       .then((response) => {
         setDialogOpen(false);

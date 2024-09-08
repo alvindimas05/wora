@@ -9,7 +9,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-type Data = {
+export type Data = {
   appVersion: string;
   isNotMac: boolean;
 };
@@ -19,7 +19,7 @@ function Actions() {
   const [isMaximized, setIsMaximized] = useState(false);
 
   useEffect(() => {
-    window.ipc.invoke("getActionsData").then((response) => {
+    window.__TAURI__.invoke("getActionsData").then((response) => {
       setData(response);
     });
   }, []);
@@ -49,7 +49,8 @@ function Actions() {
             <>
               <Button
                 variant="ghost"
-                onClick={() => window.ipc.send("minimizeWindow", true)}
+                onClick={() =>
+                  window.Ipc.send("minimizeWindow", true)}
               >
                 <IconLineDashed size={14} stroke={2} />
               </Button>
@@ -57,14 +58,15 @@ function Actions() {
                 variant="ghost"
                 onClick={() => {
                   setIsMaximized(!isMaximized);
-                  window.ipc.send("maximizeWindow", !isMaximized);
+                  window.Ipc.send("maximizeWindow", { isMaximized: !isMaximized });
                 }}
               >
                 <IconSquare size={11} stroke={2} />
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => window.ipc.send("quitApp", true)}
+                onClick={() =>
+                  window.Ipc.send("quitApp", true)}
               >
                 <IconX size={14} stroke={2} />
               </Button>

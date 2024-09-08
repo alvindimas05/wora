@@ -52,8 +52,8 @@ export const fetchMetadata = async (
   let favourite: boolean;
 
   if (file) {
-    await window.ipc
-      .invoke("getSongMetadata", file)
+    await window.Ipc
+      .invoke<any>("getSongMetadata", {file})
       .then((response) => {
         metadata = response.metadata;
         favourite = response.favourite;
@@ -88,11 +88,11 @@ export const updateDiscordState = (song: any): void => {
   const details = `${song.name} → ${song.album.name}`;
   const state = `by ${song.artist}`;
 
-  window.ipc.send("set-rpc-state", { details, state });
+  window.Ipc.send("set-rpc-state", { details, state });
 };
 
 export const resetDiscordState = (): void => {
-  window.ipc.send("set-rpc-state", defaultState);
+  window.Ipc.send("set-rpc-state", defaultState);
 };
 
 export const useAudioMetadata = (file: string) => {

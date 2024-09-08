@@ -18,7 +18,7 @@ export default function Albums() {
     }
 
     try {
-      const newAlbums = await window.ipc.invoke("getAlbums", page);
+      const newAlbums = await window.__TAURI__.invoke<any[]>("getAlbums", {page});
       if (newAlbums.length === 0) {
         setHasMore(false);
       } else {

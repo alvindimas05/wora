@@ -59,13 +59,13 @@ const Songs: React.FC<SongsProps> = ({
   };
 
   useEffect(() => {
-    window.ipc.invoke("getAllPlaylists").then((response) => {
+    window.__TAURI__.invoke<Playlist[]>("getAllPlaylists").then((response) => {
       setPlaylists(response);
     });
   }, []);
 
   const addSongToPlaylist = (playlistId: number, songId: number) => {
-    window.ipc
+    window.Ipc
       .invoke("addSongToPlaylist", {
         playlistId,
         songId,

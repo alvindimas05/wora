@@ -59,6 +59,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import Spectrogram from "../ui/spectrogram";
+import { invoke } from "@tauri-apps/api/tauri";
 
 const UPDATE_INTERVAL = 1000;
 
@@ -232,7 +233,7 @@ export const Player = () => {
 
   const toggleFavourite = useCallback((id: number) => {
     if (!id) return;
-    window.ipc.send("addToFavourites", id);
+    // window.Ipc.send("addToFavourites", id);
     setIsFavourite((prev) => !prev);
   }, []);
 
@@ -260,14 +261,13 @@ export const Player = () => {
   }, []);
 
   useEffect(() => {
-    window.ipc.invoke("getAllPlaylists").then((response) => {
+    invoke<any[]>("getAllPlaylists").then((response) => {
       setPlaylists(response);
     });
   }, []);
 
   const addSongToPlaylist = (playlistId: number, songId: number) => {
-    window.ipc
-      .invoke("addSongToPlaylist", {
+    invoke<boolean>("addSongToPlaylist", {
         playlistId,
         songId,
       })

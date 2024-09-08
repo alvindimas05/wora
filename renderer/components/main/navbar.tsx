@@ -30,6 +30,7 @@ import { useRouter } from "next/router";
 import { usePlayer } from "@/context/playerContext";
 import Spinner from "@/components/ui/spinner";
 import { useTheme } from "next-themes";
+import { invoke } from "@tauri-apps/api/tauri";
 
 type Settings = {
   name: string;
@@ -88,7 +89,7 @@ const Navbar = () => {
     }
 
     const delayDebounceFn = setTimeout(() => {
-      window.ipc.invoke("search", search).then((response) => {
+      invoke<any>("search", {query: search}).then((response) => {
         const albums = response.searchAlbums;
         const playlists = response.searchPlaylists;
         const songs = response.searchSongs;
@@ -123,12 +124,12 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    window.ipc.invoke("getSettings").then((response) => {
+    invoke<Settings>("getSettings").then((response) => {
       setSettings(response);
     });
 
-    window.ipc.on("confirmSettingsUpdate", () => {
-      window.ipc.invoke("getSettings").then((response) => {
+    window.Ipc.on("confirmSettingsUpdate", () => {
+      window.__TAURI__.invoke<Settings>("getSettings").then((response) => {
         setSettings(response);
       });
     });

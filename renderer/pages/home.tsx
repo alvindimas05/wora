@@ -13,7 +13,7 @@ export default function Home() {
   const [library, setLibrary] = useState<any | null>([]);
 
   useEffect(() => {
-    window.ipc.invoke("getRandomLibraryItems").then((response) => {
+    window.__TAURI__.invoke("getRandomLibraryItems").then((response) => {
       setLibrary(response);
     });
   }, []);

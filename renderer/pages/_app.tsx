@@ -10,6 +10,42 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/themeProvider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AnimatedBackground from "@/components/ui/animated-background";
+import { emit, listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api";
+import { InvokeArgs } from "@tauri-apps/api/tauri";
+
+
+const handler = {
+  async send(channel: string, value: unknown) {
+    try {
+      await emit(channel, value);
+    } catch (error) {}
+  },
+  on(channel: string, callback: (...args: unknown[]) => void) {
+    try {
+      const unsubscribe = listen(channel, (event) => {
+        callback(event.payload);
+      });
+
+      return () => {
+        unsubscribe.then((unsub) => unsub());
+      };
+    } catch (error) {}
+  },
+  // async invoke<T>(channel: string, args?: InvokeArgs) {
+  //   try {
+  //     if(!navigator.appVersion) return;
+  //     const result = await invoke(channel, args);
+  //     return result as T;
+  //   } catch (error) {
+  //     console.error(`Error invoking channel ${channel}:`, error);
+  //   }
+  // },
+};
+if(typeof window != "undefined"){
+  window.Ipc = handler;
+}
+export type IpcHandler = typeof handler;
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();

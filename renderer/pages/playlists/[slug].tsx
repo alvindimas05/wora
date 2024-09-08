@@ -58,8 +58,8 @@ export default function Playlist() {
 
   useEffect(() => {
     if (!router.query.slug) return;
-    window.ipc
-      .invoke("getPlaylistWithSongs", router.query.slug)
+    window.Ipc
+      .invoke<Playlist>("getPlaylistWithSongs", { id: router.query.slug })
       .then((response) => {
         setPlaylist(response);
       });
@@ -78,7 +78,7 @@ export default function Playlist() {
   };
 
   const removeSongFromPlaylist = (songId: number) => {
-    window.ipc
+    window.Ipc
       .invoke("removeSongFromPlaylist", {
         playlistId: playlist.id,
         songId,
@@ -92,11 +92,11 @@ export default function Playlist() {
             </div>,
           );
 
-          window.ipc
-            .invoke("getPlaylistWithSongs", router.query.slug)
-            .then((response) => {
-              setPlaylist(response);
-            });
+        window.Ipc
+          .invoke<Playlist>("getPlaylistWithSongs", {id: router.query.slug})
+          .then((response) => {
+            setPlaylist(response);
+          });
         }
       });
   };
@@ -115,12 +115,12 @@ export default function Playlist() {
 
   const updatePlaylist = (data: z.infer<typeof formSchema>) => {
     setLoading(true);
-    window.ipc
+    window.Ipc
       .invoke("updatePlaylist", { id: playlist.id, data })
       .then((response) => {
         if (response) {
-          window.ipc
-            .invoke("getPlaylistWithSongs", router.query.slug)
+          window.Ipc
+            .invoke<Playlist>("getPlaylistWithSongs", router.query.slug)
             .then((response) => {
               setPlaylist(response);
             });

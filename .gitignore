@@ -5,3 +5,4 @@ app
 dist
 .DS_Store
 .db
+.idea

@@ -5,6 +5,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 import { useRouter } from "next/router";
 import Spinner from "@/components/ui/spinner";
 import { useState } from "react";
+import { invoke } from "@tauri-apps/api";
 
 export default function Setup() {
   const [loading, setLoading] = useState(false);
@@ -12,8 +13,7 @@ export default function Setup() {
 
   const handleClick = () => {
     setLoading(true);
-    window.ipc
-      .invoke("setMusicFolder", true)
+    invoke("setMusicFolder")
       .then((response) => {
         if (response) {
           setLoading(false);
